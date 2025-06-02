@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forex & Gold Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+      color: #222;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #333;
+    }
+    .social-link {
+      color: #e1306c;
+      font-weight: bold;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    .social-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Position Size Calculator -->
+  <div class="container">
+    <h2>Forex Position Size Calculator</h2>
+    <label for="balance">Account Balance ($)</label>
+    <input type="number" id="balance" placeholder="e.g. 10000" />
+
+    <label for="risk">Risk Percentage (%)</label>
+    <input type="number" id="risk" placeholder="e.g. 1" step="0.1" />
+
+    <label for="stopLoss">Stop Loss (pips)</label>
+    <input type="number" id="stopLoss" placeholder="e.g. 50" />
+
+    <label for="pair">Currency Pair</label>
+    <select id="pair">
+      <option value="GBP/USD">GBP/USD</option>
+      <option value="AUD/USD">AUD/USD</option>
+      <option value="EUR/USD">EUR/USD</option>
+      <option value="XAU/USD">XAU/USD</option>
+    </select>
+
+    <button onclick="calculatePositionSize()">Calculate</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- Gold Pip Calculator -->
+  <div class="container">
+    <h2>XAU/USD Pip Calculator</h2>
+    <label for="entryPrice">Entry Price</label>
+    <input type="number" id="entryPrice" placeholder="e.g. 3313.950" step="0.001" />
+
+    <label for="exitPrice">Exit Price</label>
+    <input type="number" id="exitPrice" placeholder="e.g. 3325.820" step="0.001" />
+
+    <button onclick="calculateGoldPips()">Calculate Pips</button>
+
+    <div class="result" id="pipResult"></div>
+  </div>
+
+  <!-- Footer with Social Links -->
+  <footer>
+    Tool Coded by <strong style="color:#4CAF50;">Kiran Prasath</strong> ❤ <br/>
+    <a class="social-link" href="https://instagram.com/itskiranprasath" target="_blank">Instagram</a>
+    |
+    <a class="social-link" href="https://x.com/itskiranprasath" target="_blank" style="color:#1DA1F2;">Twitter</a>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    function calculatePositionSize() {
+      const balance = parseFloat(document.getElementById("balance").value);
+      const riskPercent = parseFloat(document.getElementById("risk").value);
+      const stopLoss = parseFloat(document.getElementById("stopLoss").value);
+      const pair = document.getElementById("pair").value;
+
+      if (isNaN(balance) || isNaN(riskPercent) || isNaN(stopLoss) || stopLoss === 0) {
+        document.getElementById("result").textContent = "Please enter valid values.";
+        return;
+      }
+
+      const riskAmount = balance * (riskPercent / 100);
+
+      let pipValuePerLot;
+      switch (pair) {
+        case "XAU/USD":
+          pipValuePerLot = 1.00;
+          break;
+        default:
+          pipValuePerLot = 10.00;
+      }
+
+      const lotSize = riskAmount / (stopLoss * pipValuePerLot);
+      const resultText = `Recommended Position Size: ${lotSize.toFixed(2)} lots`;
+
+      document.getElementById("result").textContent = resultText;
+    }
+
+    function calculateGoldPips() {
+      const entry = parseFloat(document.getElementById("entryPrice").value);
+      const exit = parseFloat(document.getElementById("exitPrice").value);
+
+      if (isNaN(entry) || isNaN(exit)) {
+        document.getElementById("pipResult").textContent = "Please enter valid prices.";
+        return;
+      }
+
+      const pipDifference = Math.abs(entry - exit) / 0.01;
+      document.getElementById("pipResult").textContent = `Pip Difference: ${pipDifference.toFixed(0)} pips`;
+    }
+  </script>
+</body>
+</html>
