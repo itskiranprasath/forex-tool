@@ -3,70 +3,114 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Forex & Gold Calculator</title>
+  <title>Forex & Gold Tools by Kiran Prasath</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .container {
-      background: white;
+      background: rgba(255, 255, 255, 0.9);
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 20px;
       max-width: 400px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
+      width: 90%;
+      margin: 30px 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      backdrop-filter: blur(12px);
     }
+
     h2 {
       text-align: center;
-      color: #333;
+      color: #222;
     }
+
     label {
       display: block;
       margin: 15px 0 5px;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 8px;
       border: 1px solid #ccc;
     }
+
     button {
       margin-top: 20px;
-      padding: 10px;
+      padding: 12px;
       width: 100%;
-      background-color: #4CAF50;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
+      transition: all 0.3s ease;
     }
+
     button:hover {
-      background-color: #45a049;
+      background: linear-gradient(to right, #0072ff, #00c6ff);
+      transform: scale(1.05);
     }
+
     .result {
       margin-top: 20px;
       font-weight: bold;
       text-align: center;
       color: #222;
     }
+
     footer {
       text-align: center;
-      margin-top: 40px;
       font-size: 14px;
-      color: #333;
+      color: #fff;
+      margin-bottom: 30px;
     }
+
     .social-link {
-      color: #e1306c;
+      color: white;
       font-weight: bold;
       text-decoration: none;
       margin: 0 10px;
+      display: inline-flex;
+      align-items: center;
     }
-    .social-link:hover {
-      text-decoration: underline;
+
+    .social-link img {
+      width: 18px;
+      height: 18px;
+      margin-right: 5px;
+      vertical-align: middle;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
+      transition: transform 0.2s ease;
+    }
+
+    .social-link img:hover {
+      transform: scale(1.2);
+    }
+
+    .red-heart {
+      color: red;
     }
   </style>
 </head>
@@ -93,7 +137,6 @@
     </select>
 
     <button onclick="calculatePositionSize()">Calculate</button>
-
     <div class="result" id="result"></div>
   </div>
 
@@ -107,16 +150,45 @@
     <input type="number" id="exitPrice" placeholder="e.g. 3325.820" step="0.001" />
 
     <button onclick="calculateGoldPips()">Calculate Pips</button>
-
     <div class="result" id="pipResult"></div>
   </div>
 
-  <!-- Footer with Social Links -->
+  <!-- Profit Calculator -->
+  <div class="container">
+    <h2>Profit Calculator</h2>
+    <label for="profitPair">Currency Pair</label>
+    <select id="profitPair">
+      <option value="GBP/USD">GBP/USD</option>
+      <option value="AUD/USD">AUD/USD</option>
+      <option value="EUR/USD">EUR/USD</option>
+      <option value="XAU/USD">XAU/USD</option>
+    </select>
+
+    <label for="profitEntry">Entry Price</label>
+    <input type="number" id="profitEntry" placeholder="e.g. 1900.00" step="0.001" />
+
+    <label for="profitExit">Exit Price</label>
+    <input type="number" id="profitExit" placeholder="e.g. 1910.00" step="0.001" />
+
+    <label for="lotSize">Lot Size</label>
+    <input type="number" id="lotSize" placeholder="e.g. 1.0" step="0.01" />
+
+    <button onclick="calculateProfit()">Calculate Profit</button>
+    <div class="result" id="profitResult"></div>
+  </div>
+
+  <!-- Footer -->
   <footer>
-    Tool Coded by <strong style="color:#4CAF50;">Kiran Prasath</strong> ❤ <br/>
-    <a class="social-link" href="https://instagram.com/itskiranprasath" target="_blank">Instagram</a>
+    Tool Coded by <strong>Kiran Prasath</strong> <span class="red-heart">❤</span><br/>
+    <a class="social-link" href="https://instagram.com/itskiranprasath" target="_blank">
+      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384063.png" alt="Instagram" />
+      Instagram
+    </a>
     |
-    <a class="social-link" href="https://x.com/itskiranprasath" target="_blank" style="color:#1DA1F2;">Twitter</a>
+    <a class="social-link" href="https://x.com/itskiranprasath" target="_blank">
+      <img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="Twitter" />
+      Twitter
+    </a>
   </footer>
 
   <!-- JavaScript -->
@@ -133,20 +205,9 @@
       }
 
       const riskAmount = balance * (riskPercent / 100);
-
-      let pipValuePerLot;
-      switch (pair) {
-        case "XAU/USD":
-          pipValuePerLot = 1.00;
-          break;
-        default:
-          pipValuePerLot = 10.00;
-      }
-
+      const pipValuePerLot = pair === "XAU/USD" ? 1.00 : 10.00;
       const lotSize = riskAmount / (stopLoss * pipValuePerLot);
-      const resultText = `Recommended Position Size: ${lotSize.toFixed(2)} lots`;
-
-      document.getElementById("result").textContent = resultText;
+      document.getElementById("result").textContent = `Recommended Position Size: ${lotSize.toFixed(2)} lots`;
     }
 
     function calculateGoldPips() {
@@ -160,6 +221,32 @@
 
       const pipDifference = Math.abs(entry - exit) / 0.01;
       document.getElementById("pipResult").textContent = `Pip Difference: ${pipDifference.toFixed(0)} pips`;
+    }
+
+    function calculateProfit() {
+      const entry = parseFloat(document.getElementById("profitEntry").value);
+      const exit = parseFloat(document.getElementById("profitExit").value);
+      const lot = parseFloat(document.getElementById("lotSize").value);
+      const pair = document.getElementById("profitPair").value;
+
+      if (isNaN(entry) || isNaN(exit) || isNaN(lot)) {
+        document.getElementById("profitResult").textContent = "Please enter all values.";
+        return;
+      }
+
+      let pipValue, pipSize;
+      if (pair === "XAU/USD") {
+        pipSize = 0.01;
+        pipValue = 1.0;
+      } else {
+        pipSize = 0.0001;
+        pipValue = 10.0;
+      }
+
+      const pipDiff = Math.abs(entry - exit) / pipSize;
+      const profit = pipDiff * pipValue * lot;
+      const direction = exit > entry ? "Profit" : "Loss";
+      document.getElementById("profitResult").textContent = `${direction}: $${profit.toFixed(2)} (${pipDiff.toFixed(0)} pips)`;
     }
   </script>
 </body>
