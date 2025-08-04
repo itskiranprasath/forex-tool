@@ -18,12 +18,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: background 0.5s ease;
-    }
-
-    body.dark {
-      background: #121212;
-      color: #fff;
     }
 
     @keyframes gradientBG {
@@ -41,20 +35,11 @@
       margin: 30px 0;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       backdrop-filter: blur(12px);
-      transition: background 0.3s ease;
-    }
-
-    body.dark .container {
-      background: rgba(30, 30, 30, 0.9);
     }
 
     h2 {
       text-align: center;
       color: #222;
-    }
-
-    body.dark h2 {
-      color: #fff;
     }
 
     label {
@@ -94,8 +79,11 @@
       color: #222;
     }
 
-    body.dark .result {
-      color: #fff;
+    .pip-info {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-top: 8px;
     }
 
     footer {
@@ -130,44 +118,13 @@
     .red-heart {
       color: red;
     }
-
-    .pip-info {
-      text-align: center;
-      font-size: 14px;
-      color: #555;
-      margin-top: 8px;
-    }
-
-    .dark .pip-info {
-      color: #bbb;
-    }
-
-    .toggle-theme {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 10px 15px;
-      background: #000;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      z-index: 999;
-    }
-
-    .toggle-theme:hover {
-      background: #333;
-    }
   </style>
 </head>
 <body>
 
-  <button class="toggle-theme" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
-
   <!-- Position Size Calculator -->
   <div class="container">
-    <h2>Forex Position Size Calculator</h2>
+    <h2>Position Size Calculator</h2>
     <label for="balance">Account Balance ($)</label>
     <input type="number" id="balance" placeholder="e.g. 10000" />
 
@@ -181,23 +138,27 @@
     <select id="pair"></select>
 
     <button onclick="calculatePositionSize()">Calculate</button>
-    <button onclick="resetForm('balance','risk','stopLoss','result')">Reset</button>
+    <button onclick="resetForm('balance','risk','stopLoss','result','pipInfo1')">Reset</button>
     <div class="result" id="result"></div>
     <div class="pip-info" id="pipInfo1"></div>
   </div>
 
-  <!-- Gold Pip Calculator -->
+  <!-- Pip Calculator -->
   <div class="container">
-    <h2>XAU/USD Pip Calculator</h2>
-    <label for="entryPrice">Entry Price</label>
-    <input type="number" id="entryPrice" placeholder="e.g. 3313.950" step="0.001" />
+    <h2>Pip Calculator</h2>
+    <label for="pipPair">Currency Pair</label>
+    <select id="pipPair"></select>
 
-    <label for="exitPrice">Exit Price</label>
-    <input type="number" id="exitPrice" placeholder="e.g. 3325.820" step="0.001" />
+    <label for="entryPip">Entry Price</label>
+    <input type="number" id="entryPip" placeholder="e.g. 1.2300" step="0.0001" />
 
-    <button onclick="calculateGoldPips()">Calculate Pips</button>
-    <button onclick="resetForm('entryPrice','exitPrice','pipResult')">Reset</button>
-    <div class="result" id="pipResult"></div>
+    <label for="exitPip">Exit Price</label>
+    <input type="number" id="exitPip" placeholder="e.g. 1.2350" step="0.0001" />
+
+    <button onclick="calculatePipDiff()">Calculate Pips</button>
+    <button onclick="resetForm('entryPip','exitPip','pipDiffResult','pipInfoCalc')">Reset</button>
+    <div class="result" id="pipDiffResult"></div>
+    <div class="pip-info" id="pipInfoCalc"></div>
   </div>
 
   <!-- Profit Calculator -->
@@ -216,7 +177,7 @@
     <input type="number" id="lotSize" placeholder="e.g. 1.0" step="0.01" />
 
     <button onclick="calculateProfit()">Calculate Profit</button>
-    <button onclick="resetForm('profitEntry','profitExit','lotSize','profitResult')">Reset</button>
+    <button onclick="resetForm('profitEntry','profitExit','lotSize','profitResult','pipInfo2')">Reset</button>
     <div class="result" id="profitResult"></div>
     <div class="pip-info" id="pipInfo2"></div>
   </div>
@@ -243,8 +204,8 @@
       "EUR/JPY", "GBP/JPY", "XAU/USD"
     ];
 
-    function populatePairs(selectId) {
-      const select = document.getElementById(selectId);
+    function populatePairs(id) {
+      const select = document.getElementById(id);
       select.innerHTML = "";
       majorPairs.forEach(pair => {
         const option = document.createElement("option");
@@ -255,8 +216,7 @@
     }
 
     window.onload = () => {
-      populatePairs("pair");
-      populatePairs("profitPair");
+      ["pair", "pipPair", "profitPair"].forEach(populatePairs);
     };
 
     function getPipSettings(pair) {
@@ -267,33 +227,37 @@
 
     function calculatePositionSize() {
       const balance = parseFloat(document.getElementById("balance").value);
-      const riskPercent = parseFloat(document.getElementById("risk").value);
+      const risk = parseFloat(document.getElementById("risk").value);
       const stopLoss = parseFloat(document.getElementById("stopLoss").value);
       const pair = document.getElementById("pair").value;
 
-      if (isNaN(balance) || isNaN(riskPercent) || isNaN(stopLoss) || stopLoss === 0) {
+      if (isNaN(balance) || isNaN(risk) || isNaN(stopLoss) || stopLoss === 0) {
         document.getElementById("result").textContent = "Please enter valid values.";
         return;
       }
 
       const { pipValue } = getPipSettings(pair);
-      const riskAmount = balance * (riskPercent / 100);
+      const riskAmount = balance * (risk / 100);
       const lotSize = riskAmount / (stopLoss * pipValue);
+
       document.getElementById("result").textContent = `Recommended Position Size: ${lotSize.toFixed(2)} lots`;
-      document.getElementById("pipInfo1").textContent = `Pip Value Used: $${pipValue.toFixed(2)} per lot`;
+      document.getElementById("pipInfo1").textContent = `Pip Value: $${pipValue.toFixed(2)} per lot`;
     }
 
-    function calculateGoldPips() {
-      const entry = parseFloat(document.getElementById("entryPrice").value);
-      const exit = parseFloat(document.getElementById("exitPrice").value);
+    function calculatePipDiff() {
+      const pair = document.getElementById("pipPair").value;
+      const entry = parseFloat(document.getElementById("entryPip").value);
+      const exit = parseFloat(document.getElementById("exitPip").value);
+      const { pipSize } = getPipSettings(pair);
 
       if (isNaN(entry) || isNaN(exit)) {
-        document.getElementById("pipResult").textContent = "Please enter valid prices.";
+        document.getElementById("pipDiffResult").textContent = "Please enter valid prices.";
         return;
       }
 
-      const pipDifference = Math.abs(entry - exit) / 0.01;
-      document.getElementById("pipResult").textContent = `Pip Difference: ${pipDifference.toFixed(0)} pips`;
+      const pipDiff = Math.abs(entry - exit) / pipSize;
+      document.getElementById("pipDiffResult").textContent = `Pip Difference: ${pipDiff.toFixed(1)} pips`;
+      document.getElementById("pipInfoCalc").textContent = `Pip Size: ${pipSize}`;
     }
 
     function calculateProfit() {
@@ -322,10 +286,6 @@
         if (el.tagName === "INPUT") el.value = "";
         else el.textContent = "";
       });
-    }
-
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
     }
   </script>
 </body>
