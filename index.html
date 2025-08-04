@@ -18,6 +18,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: background 0.5s ease;
+    }
+
+    body.dark {
+      background: #121212;
+      color: #fff;
     }
 
     @keyframes gradientBG {
@@ -35,11 +41,20 @@
       margin: 30px 0;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       backdrop-filter: blur(12px);
+      transition: background 0.3s ease;
+    }
+
+    body.dark .container {
+      background: rgba(30, 30, 30, 0.9);
     }
 
     h2 {
       text-align: center;
       color: #222;
+    }
+
+    body.dark h2 {
+      color: #fff;
     }
 
     label {
@@ -55,7 +70,7 @@
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 15px;
       padding: 12px;
       width: 100%;
       background: linear-gradient(to right, #00c6ff, #0072ff);
@@ -69,7 +84,6 @@
     }
 
     button:hover {
-      background: linear-gradient(to right, #0072ff, #00c6ff);
       transform: scale(1.05);
     }
 
@@ -78,6 +92,10 @@
       font-weight: bold;
       text-align: center;
       color: #222;
+    }
+
+    body.dark .result {
+      color: #fff;
     }
 
     footer {
@@ -112,9 +130,40 @@
     .red-heart {
       color: red;
     }
+
+    .pip-info {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .dark .pip-info {
+      color: #bbb;
+    }
+
+    .toggle-theme {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 15px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      z-index: 999;
+    }
+
+    .toggle-theme:hover {
+      background: #333;
+    }
   </style>
 </head>
 <body>
+
+  <button class="toggle-theme" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
 
   <!-- Position Size Calculator -->
   <div class="container">
@@ -129,15 +178,12 @@
     <input type="number" id="stopLoss" placeholder="e.g. 50" />
 
     <label for="pair">Currency Pair</label>
-    <select id="pair">
-      <option value="GBP/USD">GBP/USD</option>
-      <option value="AUD/USD">AUD/USD</option>
-      <option value="EUR/USD">EUR/USD</option>
-      <option value="XAU/USD">XAU/USD</option>
-    </select>
+    <select id="pair"></select>
 
     <button onclick="calculatePositionSize()">Calculate</button>
+    <button onclick="resetForm('balance','risk','stopLoss','result')">Reset</button>
     <div class="result" id="result"></div>
+    <div class="pip-info" id="pipInfo1"></div>
   </div>
 
   <!-- Gold Pip Calculator -->
@@ -150,6 +196,7 @@
     <input type="number" id="exitPrice" placeholder="e.g. 3325.820" step="0.001" />
 
     <button onclick="calculateGoldPips()">Calculate Pips</button>
+    <button onclick="resetForm('entryPrice','exitPrice','pipResult')">Reset</button>
     <div class="result" id="pipResult"></div>
   </div>
 
@@ -157,12 +204,7 @@
   <div class="container">
     <h2>Profit Calculator</h2>
     <label for="profitPair">Currency Pair</label>
-    <select id="profitPair">
-      <option value="GBP/USD">GBP/USD</option>
-      <option value="AUD/USD">AUD/USD</option>
-      <option value="EUR/USD">EUR/USD</option>
-      <option value="XAU/USD">XAU/USD</option>
-    </select>
+    <select id="profitPair"></select>
 
     <label for="profitEntry">Entry Price</label>
     <input type="number" id="profitEntry" placeholder="e.g. 1900.00" step="0.001" />
@@ -174,7 +216,9 @@
     <input type="number" id="lotSize" placeholder="e.g. 1.0" step="0.01" />
 
     <button onclick="calculateProfit()">Calculate Profit</button>
+    <button onclick="resetForm('profitEntry','profitExit','lotSize','profitResult')">Reset</button>
     <div class="result" id="profitResult"></div>
+    <div class="pip-info" id="pipInfo2"></div>
   </div>
 
   <!-- Footer -->
@@ -193,6 +237,34 @@
 
   <!-- JavaScript -->
   <script>
+    const majorPairs = [
+      "EUR/USD", "GBP/USD", "AUD/USD", "NZD/USD",
+      "USD/JPY", "USD/CHF", "USD/CAD",
+      "EUR/JPY", "GBP/JPY", "XAU/USD"
+    ];
+
+    function populatePairs(selectId) {
+      const select = document.getElementById(selectId);
+      select.innerHTML = "";
+      majorPairs.forEach(pair => {
+        const option = document.createElement("option");
+        option.value = pair;
+        option.textContent = pair;
+        select.appendChild(option);
+      });
+    }
+
+    window.onload = () => {
+      populatePairs("pair");
+      populatePairs("profitPair");
+    };
+
+    function getPipSettings(pair) {
+      if (pair.includes("JPY")) return { pipSize: 0.01, pipValue: 10 };
+      if (pair === "XAU/USD") return { pipSize: 0.01, pipValue: 1 };
+      return { pipSize: 0.0001, pipValue: 10 };
+    }
+
     function calculatePositionSize() {
       const balance = parseFloat(document.getElementById("balance").value);
       const riskPercent = parseFloat(document.getElementById("risk").value);
@@ -204,10 +276,11 @@
         return;
       }
 
+      const { pipValue } = getPipSettings(pair);
       const riskAmount = balance * (riskPercent / 100);
-      const pipValuePerLot = pair === "XAU/USD" ? 1.00 : 10.00;
-      const lotSize = riskAmount / (stopLoss * pipValuePerLot);
+      const lotSize = riskAmount / (stopLoss * pipValue);
       document.getElementById("result").textContent = `Recommended Position Size: ${lotSize.toFixed(2)} lots`;
+      document.getElementById("pipInfo1").textContent = `Pip Value Used: $${pipValue.toFixed(2)} per lot`;
     }
 
     function calculateGoldPips() {
@@ -234,19 +307,25 @@
         return;
       }
 
-      let pipValue, pipSize;
-      if (pair === "XAU/USD") {
-        pipSize = 0.01;
-        pipValue = 1.0;
-      } else {
-        pipSize = 0.0001;
-        pipValue = 10.0;
-      }
-
+      const { pipSize, pipValue } = getPipSettings(pair);
       const pipDiff = Math.abs(entry - exit) / pipSize;
       const profit = pipDiff * pipValue * lot;
       const direction = exit > entry ? "Profit" : "Loss";
+
       document.getElementById("profitResult").textContent = `${direction}: $${profit.toFixed(2)} (${pipDiff.toFixed(0)} pips)`;
+      document.getElementById("pipInfo2").textContent = `Pip Size: ${pipSize}, Pip Value: $${pipValue} per lot`;
+    }
+
+    function resetForm(...ids) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el.tagName === "INPUT") el.value = "";
+        else el.textContent = "";
+      });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
     }
   </script>
 </body>
