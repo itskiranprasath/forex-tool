@@ -27,7 +27,7 @@
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.95);
       padding: 30px;
       border-radius: 20px;
       max-width: 400px;
@@ -37,15 +37,9 @@
       backdrop-filter: blur(12px);
     }
 
-    h2 {
-      text-align: center;
-      color: #222;
-    }
+    h2 { text-align: center; color: #222; }
 
-    label {
-      display: block;
-      margin: 15px 0 5px;
-    }
+    label { display: block; margin: 15px 0 5px; }
 
     input, select {
       width: 100%;
@@ -67,66 +61,30 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
+    button:hover { transform: scale(1.05); }
 
-    button:hover {
-      transform: scale(1.05);
-    }
+    .toggle { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 
-    .result {
-      margin-top: 20px;
-      font-weight: bold;
-      text-align: center;
-      color: #222;
-    }
+    .result { margin-top: 20px; font-weight: bold; text-align: center; color: #222; }
 
-    .pip-info {
-      text-align: center;
-      font-size: 14px;
-      color: #555;
-      margin-top: 8px;
-    }
+    .pip-info { text-align: center; font-size: 14px; color: #555; margin-top: 8px; }
 
-    footer {
-      text-align: center;
-      font-size: 14px;
-      color: #fff;
-      margin-bottom: 30px;
-    }
+    footer { text-align: center; font-size: 14px; color: #fff; margin-bottom: 30px; }
 
-    .social-link {
-      color: white;
-      font-weight: bold;
-      text-decoration: none;
-      margin: 0 10px;
-      display: inline-flex;
-      align-items: center;
-    }
+    .social-link { color: white; font-weight: bold; text-decoration: none; margin: 0 10px; display: inline-flex; align-items: center; }
+    .social-link img { width: 18px; height: 18px; margin-right: 5px; vertical-align: middle; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2)); transition: transform 0.2s ease; }
+    .social-link img:hover { transform: scale(1.2); }
 
-    .social-link img {
-      width: 18px;
-      height: 18px;
-      margin-right: 5px;
-      vertical-align: middle;
-      filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
-      transition: transform 0.2s ease;
-    }
+    .red-heart { color: red; }
 
-    .social-link img:hover {
-      transform: scale(1.2);
-    }
-
-    .red-heart {
-      color: red;
-    }
-
-    /* World Clock Panel */
+    /* World Clock Panel (digital only, hideable) */
     .clock-panel {
       position: fixed;
       top: 0;
       right: 0;
       height: 100%;
       width: 260px;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.85);
       backdrop-filter: blur(12px);
       box-shadow: -4px 0 20px rgba(0,0,0,0.2);
       display: flex;
@@ -134,6 +92,7 @@
       padding: 10px;
       overflow-y: auto;
       transition: transform 0.3s ease;
+      z-index: 999;
     }
     .clock-panel.collapsed { transform: translateX(100%); }
 
@@ -141,12 +100,12 @@
       position: fixed;
       top: 20px;
       right: 260px;
-      background: #0072ff;
+      background: #333;
       color: #fff;
       border: none;
       border-radius: 50%;
-      width: 35px;
-      height: 35px;
+      width: 36px;
+      height: 36px;
       cursor: pointer;
       font-size: 18px;
       display: flex;
@@ -162,20 +121,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(0,0,0,0.06);
       padding: 12px;
       border-radius: 12px;
       margin: 8px 0;
-      color: #fff;
+      color: #222;
       font-weight: 600;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
     }
-
-    .clock-card.sydney { background: linear-gradient(135deg, #00c6ff, #0072ff); }
-    .clock-card.wellington { background: linear-gradient(135deg, #89f7fe, #66a6ff); }
-    .clock-card.tokyo { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
-    .clock-card.london { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-    .clock-card.newyork { background: linear-gradient(135deg, #fddb92, #d1fdff); color:#333; }
-    .clock-card.india { background: linear-gradient(135deg, #f7971e, #ffd200); color:#333; }
 
     @media(max-width:768px){
       .clock-panel{ width: 220px; }
@@ -221,6 +175,11 @@
     <label for="lotSize">Lot Size</label>
     <input type="number" id="lotSize" placeholder="e.g. 1.0" step="0.01" />
 
+    <div class="toggle">
+      <label><input type="radio" name="tradeType" value="long" checked> Long</label>
+      <label><input type="radio" name="tradeType" value="short"> Short</label>
+    </div>
+
     <button onclick="calculateProfit()">Calculate Profit</button>
     <button onclick="resetForm('profitEntry','profitExit','lotSize','profitResult','pipInfo2')">Reset</button>
     <div class="result" id="profitResult"></div>
@@ -259,25 +218,25 @@
     </a>
   </footer>
 
-  <!-- World Clock Panel -->
+  <!-- World Clock Panel (digital only) -->
   <div class="clock-panel" id="clockPanel">
-    <div class="clock-card india"><span>India</span><span id="time-india"></span></div>
-    <div class="clock-card sydney"><span>Sydney</span><span id="time-sydney"></span></div>
-    <div class="clock-card wellington"><span>Wellington</span><span id="time-wellington"></span></div>
-    <div class="clock-card tokyo"><span>Tokyo</span><span id="time-tokyo"></span></div>
-    <div class="clock-card london"><span>London</span><span id="time-london"></span></div>
-    <div class="clock-card newyork"><span>New York</span><span id="time-newyork"></span></div>
+    <div class="clock-card"><span>India</span><span id="time-india"></span></div>
+    <div class="clock-card"><span>Sydney</span><span id="time-sydney"></span></div>
+    <div class="clock-card"><span>Wellington</span><span id="time-wellington"></span></div>
+    <div class="clock-card"><span>Tokyo</span><span id="time-tokyo"></span></div>
+    <div class="clock-card"><span>London</span><span id="time-london"></span></div>
+    <div class="clock-card"><span>New York</span><span id="time-newyork"></span></div>
   </div>
-  <button class="toggle-btn" id="toggleBtn">❮</button>
+  <button class="toggle-btn" id="toggleBtn" aria-label="Toggle world clock panel">❮</button>
 
   <!-- JavaScript -->
   <script>
+    // Populate pairs
     const majorPairs = [
       "EUR/USD", "GBP/USD", "AUD/USD", "NZD/USD",
       "USD/JPY", "USD/CHF", "USD/CAD",
       "EUR/JPY", "GBP/JPY", "XAU/USD"
     ];
-
     function populatePairs(id) {
       const select = document.getElementById(id);
       select.innerHTML = "";
@@ -289,82 +248,60 @@
       });
     }
 
-    window.onload = () => {
-      ["pair", "pipPair", "profitPair"].forEach(populatePairs);
-      updateClocks();
-      setInterval(updateClocks, 1000);
-    };
-
+    // Calculators
     function getPipSettings(pair) {
       if (pair.includes("JPY")) return { pipSize: 0.01, pipValue: 10 };
       if (pair === "XAU/USD") return { pipSize: 0.01, pipValue: 1 };
       return { pipSize: 0.0001, pipValue: 10 };
     }
-
     function calculatePositionSize() {
       const balance = parseFloat(document.getElementById("balance").value);
       const risk = parseFloat(document.getElementById("risk").value);
       const stopLoss = parseFloat(document.getElementById("stopLoss").value);
       const pair = document.getElementById("pair").value;
-
       if (isNaN(balance) || isNaN(risk) || isNaN(stopLoss) || stopLoss === 0) {
         document.getElementById("result").textContent = "Please enter valid values.";
         return;
       }
-
       const { pipValue } = getPipSettings(pair);
       const riskAmount = balance * (risk / 100);
       const lotSize = riskAmount / (stopLoss * pipValue);
-
       document.getElementById("result").textContent = `Recommended Position Size: ${lotSize.toFixed(2)} lots`;
       document.getElementById("pipInfo1").textContent = `Pip Value: $${pipValue.toFixed(2)} per lot`;
     }
-
     function calculatePipDiff() {
       const pair = document.getElementById("pipPair").value;
       const entry = parseFloat(document.getElementById("entryPip").value);
       const exit = parseFloat(document.getElementById("exitPip").value);
       const { pipSize } = getPipSettings(pair);
-
       if (isNaN(entry) || isNaN(exit)) {
         document.getElementById("pipDiffResult").textContent = "Please enter valid prices.";
         return;
       }
-
       const pipDiff = Math.abs(entry - exit) / pipSize;
       document.getElementById("pipDiffResult").textContent = `Pip Difference: ${pipDiff.toFixed(1)} pips`;
       document.getElementById("pipInfoCalc").textContent = `Pip Size: ${pipSize}`;
     }
-
     function calculateProfit() {
       const entry = parseFloat(document.getElementById("profitEntry").value);
       const exit = parseFloat(document.getElementById("profitExit").value);
       const lot = parseFloat(document.getElementById("lotSize").value);
       const pair = document.getElementById("profitPair").value;
-
+      const tradeTypeEl = document.querySelector('input[name="tradeType"]:checked');
+      const tradeType = tradeTypeEl ? tradeTypeEl.value : 'long';
       if (isNaN(entry) || isNaN(exit) || isNaN(lot)) {
         document.getElementById("profitResult").textContent = "Please enter all values.";
         return;
       }
-
       const { pipSize, pipValue } = getPipSettings(pair);
-      const pipDiff = Math.abs(entry - exit) / pipSize;
-      const profit = pipDiff * pipValue * lot;
-      const direction = exit > entry ? "Profit" : "Loss";
-
-      document.getElementById("profitResult").textContent = `${direction}: $${profit.toFixed(2)} (${pipDiff.toFixed(0)} pips)`;
+      const pipDiff = (exit - entry) / pipSize; // signed pips
+      const profit = (tradeType === 'long' ? pipDiff : -pipDiff) * pipValue * lot;
+      const direction = profit >= 0 ? "Profit" : "Loss";
+      document.getElementById("profitResult").textContent = `${direction}: $${Math.abs(profit).toFixed(2)} (${Math.abs(pipDiff).toFixed(0)} pips)`;
       document.getElementById("pipInfo2").textContent = `Pip Size: ${pipSize}, Pip Value: $${pipValue} per lot`;
     }
 
-    function resetForm(...ids) {
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (el.tagName === "INPUT") el.value = "";
-        else el.textContent = "";
-      });
-    }
-
-    // World Clock
+    // World Clock (12-hour AM/PM)
     const timeZones = {
       india: "Asia/Kolkata",
       sydney: "Australia/Sydney",
@@ -373,19 +310,35 @@
       london: "Europe/London",
       newyork: "America/New_York"
     };
-
     function updateClocks(){
-      Object.keys(timeZones).forEach(city => {
+      for (const [city, tz] of Object.entries(timeZones)) {
         const now = new Date().toLocaleTimeString("en-US", {
-          timeZone: timeZones[city],
+          timeZone: tz,
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
           hour12: true
         });
-        document.getElementById("time-"+city).textContent = now;
-      });
+        const el = document.getElementById("time-"+city);
+        if (el) el.textContent = now;
+      }
     }
 
-    document.getElementById("toggleBtn").addEventListener("click",()=>{
-      document.getElementById("clockPanel").
+    // Panel toggle
+    function togglePanel(){
+      const panel = document.getElementById('clockPanel');
+      const btn = document.getElementById('toggleBtn');
+      panel.classList.toggle('collapsed');
+      btn.textContent = panel.classList.contains('collapsed') ? '❯' : '❮';
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      ["pair", "pipPair", "profitPair"].forEach(populatePairs);
+      updateClocks();
+      setInterval(updateClocks, 1000);
+      document.getElementById('toggleBtn').addEventListener('click', togglePanel);
+    });
+  </script>
+</body>
+</html>
