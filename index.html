@@ -131,7 +131,12 @@
       color: #222;
       font-weight: 600;
       box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      font-size: 14px;
+      flex-direction: column;
+      align-items: flex-start;
     }
+
+    .clock-card span.time { font-weight: bold; margin-top: 4px; }
 
     @media(max-width:768px){
       .clock-panel{ width: 220px; }
@@ -222,12 +227,18 @@
 
   <!-- World Clock Panel (digital only) -->
   <div class="clock-panel" id="clockPanel">
-    <div class="clock-card"><span>India</span><span id="time-india"></span></div>
-    <div class="clock-card"><span>Sydney</span><span id="time-sydney"></span></div>
-    <div class="clock-card"><span>Wellington</span><span id="time-wellington"></span></div>
-    <div class="clock-card"><span>Tokyo</span><span id="time-tokyo"></span></div>
-    <div class="clock-card"><span>London</span><span id="time-london"></span></div>
-    <div class="clock-card"><span>New York</span><span id="time-newyork"></span></div>
+    <div style="margin: 10px 0; text-align:center;">
+      <label>
+        <input type="checkbox" id="formatToggle" />
+        24-Hour Format
+      </label>
+    </div>
+    <div class="clock-card"><span>India</span><span class="time" id="time-india"></span></div>
+    <div class="clock-card"><span>Sydney</span><span class="time" id="time-sydney"></span></div>
+    <div class="clock-card"><span>Wellington</span><span class="time" id="time-wellington"></span></div>
+    <div class="clock-card"><span>Tokyo</span><span class="time" id="time-tokyo"></span></div>
+    <div class="clock-card"><span>London</span><span class="time" id="time-london"></span></div>
+    <div class="clock-card"><span>New York</span><span class="time" id="time-newyork"></span></div>
   </div>
   <button class="toggle-btn" id="toggleBtn" aria-label="Toggle world clock panel">❮</button>
 
@@ -303,7 +314,17 @@
       document.getElementById("pipInfo2").textContent = `Pip Size: ${pipSize}, Pip Value: $${pipValue} per lot`;
     }
 
-    // World Clock (12-hour AM/PM)
+    function resetForm(...ids){
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(el){
+          if(el.tagName === 'INPUT') el.value = '';
+          else el.textContent = '';
+        }
+      });
+    }
+
+    // World Clock (12-hour AM/PM or 24-hour) with date
     const timeZones = {
       india: "Asia/Kolkata",
       sydney: "Australia/Sydney",
@@ -312,17 +333,25 @@
       london: "Europe/London",
       newyork: "America/New_York"
     };
+
     function updateClocks(){
+      const is24Hour = document.getElementById('formatToggle').checked;
       for (const [city, tz] of Object.entries(timeZones)) {
-        const now = new Date().toLocaleTimeString("en-US", {
+        const now = new Date();
+        const options = {
           timeZone: tz,
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true
-        });
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: !is24Hour,
+          weekday: 'short',
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        };
+        const formatted = now.toLocaleString('en-US', options);
         const el = document.getElementById("time-"+city);
-        if (el) el.textContent = now;
+        if(el) el.textContent = formatted;
       }
     }
 
@@ -340,8 +369,8 @@
       updateClocks();
       setInterval(updateClocks, 1000);
       document.getElementById('toggleBtn').addEventListener('click', togglePanel);
+      document.getElementById('formatToggle').addEventListener('change', updateClocks);
     });
   </script>
 </body>
 </html>
-
